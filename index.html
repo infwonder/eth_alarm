@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+      <title>Ethereum Alarm Clock</title>
+      <link rel="stylesheet" href="css/style.css">
+    <script>
+      var Web3 = require('web3');
+      var net  = require('net');
+      var web3 = new Web3();
+      web3.setProvider(new Web3.providers.HttpProvider('http://127.0.0.1:8545'));
+    </script>
+</head>
+
+<body>
+<!-- particles.js container --> 
+    <div id="particle"></div>
+    <div id="overlay">
+      <table align=center style="margin-top: 150px; margin-bottom: 150px"> 
+      <tr>
+        <td>
+          <dl>
+             <dt>Local Time: </dt><dd id="txt"></dd>
+          </dl>
+        </td>
+        <td>
+          <dl>
+            <dt>Unix Epoch: </dt><dd id="epo"></dd>
+          </dl>
+        </td>
+        <td>
+          <dl>
+            <dt>ETH Block: </dt><dd id="eth"></dd>
+          </dl>
+        </td>
+      </tr>
+      <tr>
+        <td colspan=3 align="center">
+          <dl>
+            <dt>Set Alarm on ETH Block: </dt>
+            <dd>
+              <form onsubmit="setAlarm()">
+                <input type="text" id="setBlock">
+              </form>
+            </dd>
+          </dl>
+        </td>
+      </tr>
+      <tr><td align="center" colspan=3><h2 style="color: #ffffff;" id=received>No Alarm Set ...</h2></td></tr>
+      </table>
+    </div>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="js/index.js"></script>
+    <script>
+    var t;
+
+    function startTime() {
+        var today = new Date();
+        var h = prefix(today.getHours());
+        var m = prefix(today.getMinutes());
+        var s = prefix(today.getSeconds());
+        var u = today.getTime()/1000|0;
+
+        var trigger = document.getElementById('setBlock').value;
+        var b = web3.eth.blockNumber;
+
+        if (trigger) 
+        { 
+            if (b == trigger) 
+            { 
+                document.getElementById('received').innerHTML = "Alarm TRIGGERED ON ETH Block: " + trigger;
+            } else if(b < trigger) {
+                document.getElementById('received').innerHTML = "Alarm Set at ETH Block: " + trigger;
+            }
+        } else {
+            document.getElementById('received').innerHTML = "No Alarm Set ...";
+        }
+
+        document.getElementById('txt').innerHTML = h + ":" + m + ":" + s;
+        document.getElementById('epo').innerHTML = u;
+        document.getElementById('eth').innerHTML = web3.eth.blockNumber;
+
+        t = setTimeout(startTime, 250);
+    }
+
+    function prefix(i) {
+        if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+        return i;
+    }
+
+    function setAlarm() {
+        var trigger = document.getElementById("setBlock");
+    }
+
+    document.onload = startTime();
+    </script>
+</body>
+</html>
