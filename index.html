@@ -16,21 +16,23 @@
 <!-- particles.js container --> 
     <div id="particle"></div>
     <div id="overlay">
-      <table align=center style="margin-top: 150px; margin-bottom: 150px"> 
+      <table align=center style="margin-top: 120px; margin-bottom: 120px"> 
       <tr>
-        <td>
+        <td colspan=3 align="center">
           <dl>
-             <dt>Local Time: </dt><dd id="txt"></dd>
+             <dt>Local Time (UNIX Epoch): </dt><dd id="txt"></dd>
           </dl>
         </td>
-        <td>
-          <dl>
-            <dt>Unix Epoch: </dt><dd id="epo"></dd>
-          </dl>
-        </td>
-        <td>
+      </tr>
+      <tr>
+        <td align="center">
           <dl>
             <dt>ETH Block: </dt><dd id="eth"></dd>
+          </dl>
+        </td>
+        <td colspan=2 align="center">
+          <dl>
+            <dt>Block Timestamp: </dt><dd id="epo"></dd>
           </dl>
         </td>
       </tr>
@@ -76,8 +78,8 @@
             document.getElementById('received').innerHTML = "No Alarm Set ...";
         }
 
-        document.getElementById('txt').innerHTML = h + ":" + m + ":" + s;
-        document.getElementById('epo').innerHTML = u;
+        document.getElementById('txt').innerHTML = h + ":" + m + ":" + s + " (" + u + ")";
+        document.getElementById('epo').innerHTML = web3.eth.getBlock('latest').timestamp;
         document.getElementById('eth').innerHTML = web3.eth.blockNumber;
 
         t = setTimeout(startTime, 250);
