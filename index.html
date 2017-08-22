@@ -17,52 +17,126 @@
 <!-- particles.js container --> 
     <div id="particle"></div>
     <div id="overlay">
-      <table align=center style="margin-top: 40px; margin-bottom: 20px"> 
+      <table align=center style="margin-top: 12%; margin-bottom: 6%"> 
       <tr>
-        <td colspan=3 align="center">
+        <td colspan=4 align="center">
           <dl>
              <dt>Local Time (UNIX Epoch): </dt><dd id="txt"></dd>
           </dl>
         </td>
       </tr>
       <tr>
-        <td align="center">
+        <td colspan=2 align="left">
           <dl>
             <dt>ETH Block: </dt><dd id="eth"></dd>
           </dl>
         </td>
-        <td colspan=2 align="center">
+        <td colspan=2 align="right">
           <dl>
             <dt>Block Timestamp: </dt><dd id="epo"></dd>
           </dl>
         </td>
       </tr>
       <tr>
-        <td colspan=3 align="center">
-          <dl>
-            <dt>Set Alarm on ETH Block: </dt>
-            <dd>
-              <form onsubmit="setAlarm()" style="text-align: center">
-                <label for="setBlock">Eth Block:</label><input type="text" id="setBlock"><br>
-                <label for="fromAddr">From:</label><input type="text" id="fromAddr" size="64"><br>
-                <label for="toAddr">To:</label><input type="text" id="toAddr" size="64"><br>
-                <label for="valueEth">Ether:</label><input type="text" id="valueEth"><br>
-                <label for="gasLimit">Gas Limit:</label><input type="text" id="gasLimit"><br>
-                <label for="gasPrice">Gas Price:</label><input type="text" id="gasPrice"><br>
-                <label for="password">Password:</label><input type="password" id="password"><br>
-                <input id="reset" type="submit" value="reset">
-              </form>
-            </dd>
-          </dl>
+        <td colspan=4><br></td>
+      </tr>
+      <tr>
+        <td colspan=4 align="center" style="color: rgba(255,255,0,1); font-size: 125%">Alarm Type: </td>
+      </tr>
+      <tr>
+        <form onsubmit="setAlarm(); return false;" style="text-align: center;">
+        <td colspan=1 align="right">
+            <label for="type_block_no" style="color: rgba(255,255,0,1); font-size: 125%;">ETH Block No.</label>
+        </td>
+        <td colspan=3 align="left">
+            <input type="radio" id="type_block_no" value="blockNo"><br>
         </td>
       </tr>
-      <tr><td align="center" colspan=3><h2 style="color: #ffffff;" id=received>No Alarm Set ...</h2></td></tr>
+      <tr>
+        <td colspan=1 align="right">
+            <label for="type_block_ts" style="color: rgba(255,255,0,1); font-size: 125%;">Block Timestamp</label>
+        </td>
+        <td colspan=3 align="left">
+            <input type="radio" id="type_block_ts" value="blockTs">
+        </td>
+      </tr>
+      <tr>
+        <td colspan=1 align="right">
+            <label for="setBlock" style="color: rgba(255,255,0,1); font-size: 125%;">Trigger:</label>
+        </td>
+        <td colspan=3 align="left">
+            <input type="text" id="setBlock" style="font-family: monospace" size="25px"><br>
+        </td>
+      </tr>
+      <tr>
+        <td colspan=4><br></td>
+      </tr>
+      <tr>
+        <td colspan=4 align="center" style="color: rgba(255,255,0,1); font-size: 125%">Tx Object: </td>
+      </tr>
+      <tr>
+        <td colspan=1 align="right">
+                <label for="fromAddr" style="color: rgba(255,255,0,1); font-size: 125%;">From:</label>
+        </td>
+        <td colspan=3 align="left">
+                <input type="text" id="fromAddr" style="font-family:monospace;" size="90px">
+        </td>
+      </tr>
+      <tr>
+        <td colspan=1 align="right">
+                <label for="toAddr" style="color: rgba(255,255,0,1); font-size: 125%;">To:</label>
+        </td>
+        <td colspan=3 align="left">
+                <input type="text" id="toAddr" style="font-family:monospace;" size="90px">
+        </td>
+      </tr>
+      <tr>
+        <td colspan=1 align="right">
+                <label for="valueEth" style="color: rgba(255,255,0,1); font-size: 125%;">Ether:</label>
+        </td>
+        <td colspan=3 align="left">
+                <input type="text" id="valueEth" style="font-family: monospace" size="25px">
+        </td>
+      </tr>
+      <tr>
+        <td colspan=1 align="right">
+                <label for="gasLimit" style="color: rgba(255,255,0,1); font-size: 125%;">Gas Limit:</label>
+        </td>
+        <td colspan=3 align="left">
+                <input type="text" id="gasLimit" style="font-family: monospace" size="25px"><br>
+        </td>
+      </tr>
+      <tr>
+        <td colspan=1 align="right">
+                <label for="gasPrice" style="color: rgba(255,255,0,1); font-size: 125%;">Gas Price:</label>
+        </td>
+        <td colspan=3 align="left">
+                <input type="text" id="gasPrice" style="font-family: monospace" size="25px"><br>
+        </td>
+      </tr>
+      <tr>
+        <td colspan=1 align="right">
+                <label for="password" style="color: rgba(255,255,0,1); font-size: 125%;">Password:</label>
+        </td>
+        <td colspan=3 align="left">
+                <input type="password" id="password" style="font-family: monospace" size="25px"><br>
+        </td>
+      </tr>
+      <tr>
+        <td colspan=4 align="center">
+                <input type="submit" style="font-size: 125%;" value="reset">
+        </td>
+      </tr>
+        </form>
+      <tr><td align="center" colspan=4><h2 style="color: #ffffff;" id="received">No Alarm Set ...</h2></td></tr>
+      <tr><td align="center" colspan=4><h2 style="color: #ffffff;" id="txResponse"></h2></td></tr>
       </table>
     </div>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="js/index.js"></script>
     <script>
     var t;
+    var setup = false;
     var fired = false; 
 
     function startTime() {
@@ -72,12 +146,23 @@
         var s = prefix(today.getSeconds());
         var u = today.getTime()/1000|0;
 
-        var trigger = document.getElementById('setBlock').value;
-        var b = web3.eth.blockNumber;
+        var bn = web3.eth.blockNumber;
+        var bt = web3.eth.getBlock(bn).timestamp;
 
-        if (trigger) 
-        { 
-            if (b == trigger && !fired) 
+        if (setup) 
+        {
+            var tt = null;
+            var b  = null;
+            var trigger = document.getElementById('setBlock').value;
+
+            if (document.getElementById('type_block_no').checked) 
+            {
+                b = bn; tt = 'ETH Block';
+            } else if (document.getElementById('type_block_ts').checked) {
+                b = bt; tt = 'ETH Block timestamp';
+            }
+
+            if (b >= trigger && !fired) 
             { 
                 fired = true;
                 var txObj = 
@@ -96,7 +181,6 @@
                 ipc3.unlockToPay(txObj, document.getElementById('password').value.toString(), web3)
                 .then((tx) =>
                 {
-
                   document.getElementById('received').innerHTML = "txhash: " + tx;
                   ipc3.personal.lockAccount(txObj.from, (e,r) =>
                   {
@@ -104,15 +188,24 @@
                     ipc3.net._requestManager.provider.connection.destroy();
                   });
                   return tx;
-                 })
+                })
                 .then((txhash) =>
                 {
                   return web3.getTransactionReceiptMined(txhash, 500);
                 })
-                .then((r) => { document.getElementById('received').innerHTML = "Transaction " + r.transactionHash + " is mined on block " + r.blockNumber })
+                .then((r) => 
+                {
+                    document.getElementById('txResponse').innerHTML = "Transaction is mined on block " + r.blockNumber 
+                })
                 .catch((err) => { console.log("error: " + err); });
             } else if(b < trigger) {
-                document.getElementById('received').innerHTML = "Alarm Set at ETH Block: " + trigger;
+                document.getElementById('received').innerHTML = "Alarm Set at " + tt + ": + trigger;
+            } else if(b >= trigger && fired) {
+                if ((tt === "ETH Block" && b - trigger > 3) || (tt === "ETH Block timestamp" && b - trigger > 60)) 
+                {
+                    setup = false; 
+                    document.getElementById('txResponse').innerHTML = '' 
+                }
             }
         } else {
             document.getElementById('received').innerHTML = "No Alarm Set ...";
@@ -125,14 +218,16 @@
         t = setTimeout(startTime, 250);
     }
 
-    function prefix(i) {
+    function prefix(i) 
+    {
         if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
         return i;
     }
 
-    function setAlarm() {
-        var trigger = document.getElementById("setBlock");
-        return false;
+    function setAlarm() 
+    {
+        setup = true;
+        fired = false;
     }
 
     document.onload = startTime();
