@@ -1,6 +1,7 @@
 dt { color: #ffff00; font-size: 125%; }
 dd { color: #ffaa22; font-size: 150%; margin-left: 15px;}
 table, td { padding-left: 40px; padding-right: 40px;}
+label { padding-right: 20px}
 #particle {
   background-color: #323840;
   position:fixed;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html >
+<html>
 <head>
   <meta charset="UTF-8">
       <title>Ethereum Alarm Clock</title>
@@ -9,6 +9,7 @@
       var net  = require('net');
       var web3 = new Web3();
       web3.setProvider(new Web3.providers.HttpProvider('http://127.0.0.1:8545'));
+      web3.getTransactionReceiptMined = require('./js/libs/txReceiptMined.js');
     </script>
 </head>
 
@@ -16,7 +17,7 @@
 <!-- particles.js container --> 
     <div id="particle"></div>
     <div id="overlay">
-      <table align=center style="margin-top: 120px; margin-bottom: 120px"> 
+      <table align=center style="margin-top: 40px; margin-bottom: 20px"> 
       <tr>
         <td colspan=3 align="center">
           <dl>
@@ -41,8 +42,15 @@
           <dl>
             <dt>Set Alarm on ETH Block: </dt>
             <dd>
-              <form onsubmit="setAlarm()">
-                <input type="text" id="setBlock">
+              <form onsubmit="setAlarm()" style="text-align: center">
+                <label for="setBlock">Eth Block:</label><input type="text" id="setBlock"><br>
+                <label for="fromAddr">From:</label><input type="text" id="fromAddr" size="64"><br>
+                <label for="toAddr">To:</label><input type="text" id="toAddr" size="64"><br>
+                <label for="valueEth">Ether:</label><input type="text" id="valueEth"><br>
+                <label for="gasLimit">Gas Limit:</label><input type="text" id="gasLimit"><br>
+                <label for="gasPrice">Gas Price:</label><input type="text" id="gasPrice"><br>
+                <label for="password">Password:</label><input type="password" id="password"><br>
+                <input id="reset" type="submit" value="reset">
               </form>
             </dd>
           </dl>
@@ -55,6 +63,7 @@
     <script src="js/index.js"></script>
     <script>
     var t;
+    var fired = false; 
 
     function startTime() {
         var today = new Date();
@@ -68,9 +77,40 @@
 
         if (trigger) 
         { 
-            if (b == trigger) 
+            if (b == trigger && !fired) 
             { 
-                document.getElementById('received').innerHTML = "Alarm TRIGGERED ON ETH Block: " + trigger;
+                fired = true;
+                var txObj = 
+                {
+                   from: document.getElementById('fromAddr').value.toString(),
+                     to: document.getElementById('toAddr').value.toString(),
+                  value: web3.toWei(document.getElementById('valueEth').value, 'ether'),
+                    gas: document.getElementById('gasLimit').value.toString() || "200000",
+                  gasPrice: document.getElementById('gasPrice').value.toString() || "50000000000"
+                };
+
+                var ipc3 = new Web3();
+                ipc3.setProvider(new Web3.providers.IpcProvider('/home/jasonlin/.ethereum/geth.ipc', net));
+                ipc3.unlockToPay = require('./js/libs/unlockViaIPC.js'); 
+
+                ipc3.unlockToPay(txObj, document.getElementById('password').value.toString(), web3)
+                .then((tx) =>
+                {
+
+                  document.getElementById('received').innerHTML = "txhash: " + tx;
+                  ipc3.personal.lockAccount(txObj.from, (e,r) =>
+                  {
+                    if(e) throw(e);
+                    ipc3.net._requestManager.provider.connection.destroy();
+                  });
+                  return tx;
+                 })
+                .then((txhash) =>
+                {
+                  return web3.getTransactionReceiptMined(txhash, 500);
+                })
+                .then((r) => { document.getElementById('received').innerHTML = "Transaction " + r.transactionHash + " is mined on block " + r.blockNumber })
+                .catch((err) => { console.log("error: " + err); });
             } else if(b < trigger) {
                 document.getElementById('received').innerHTML = "Alarm Set at ETH Block: " + trigger;
             }
@@ -92,6 +132,7 @@
 
     function setAlarm() {
         var trigger = document.getElementById("setBlock");
+        return false;
     }
 
     document.onload = startTime();
