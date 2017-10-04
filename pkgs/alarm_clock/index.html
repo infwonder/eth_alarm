@@ -139,36 +139,6 @@
     var setup = false;
     var fired = false; 
 
-    function updateTime(hr, min, sec, ue, bt, bs) {
-        document.getElementById('txt').innerHTML = hr + ":" + min + ":" + sec + " (" + ue + ")";
-        document.getElementById('epo').innerHTML = bt;
-        document.getElementById('eth').innerHTML = bs;
-    }
-
-    function typeTags(blockNumber, blockTimestamp) {
-        var b;
-        var tt;
-
-        if (document.getElementById('type_block_no').checked) 
-        {
-            b = blockNumber; tt = 'ETH Block';
-        } else if (document.getElementById('type_block_ts').checked) {
-            b = blockTimestamp; tt = 'ETH Block timestamp';
-        }
-
-        return {'tick': b, 'tag': tt};
-    }
-
-    function getTxObj() {
-        return {
-            from: document.getElementById('fromAddr').value.toString(),
-              to: document.getElementById('toAddr').value.toString(),
-           value: web3.toWei(document.getElementById('valueEth').value, 'ether'),
-             gas: document.getElementById('gasLimit').value.toString() || "200000",
-        gasPrice: document.getElementById('gasPrice').value.toString() || "50000000000"
-        };
-    }
-
     function startTime() {
         var today = new Date();
         var h = prefix(today.getHours());
@@ -178,19 +148,33 @@
 
         var bn = web3.eth.blockNumber;
         var bt = web3.eth.getBlock(bn).timestamp;
-        var tags = typeTags(bn, bt);
 
         if (setup) 
         {
-            var tt = tags.tag;
-            var b  = tags.tick;
+            var tt = null;
+            var b  = null;
             var trigger = document.getElementById('setBlock').value;
+
+            if (document.getElementById('type_block_no').checked) 
+            {
+                b = bn; tt = 'ETH Block';
+            } else if (document.getElementById('type_block_ts').checked) {
+                b = bt; tt = 'ETH Block timestamp';
+            }
 
             if (b >= trigger && !fired) 
             { 
                 fired = true;
-                var txObj = getTxObj();
-                var ipc3  = new Web3();
+                var txObj = 
+                {
+                   from: document.getElementById('fromAddr').value.toString(),
+                     to: document.getElementById('toAddr').value.toString(),
+                  value: web3.toWei(document.getElementById('valueEth').value, 'ether'),
+                    gas: document.getElementById('gasLimit').value.toString() || "200000",
+                  gasPrice: document.getElementById('gasPrice').value.toString() || "50000000000"
+                };
+
+                var ipc3 = new Web3();
                 ipc3.setProvider(new Web3.providers.IpcProvider('/home/jasonlin/.ethereum/geth.ipc', net));
                 ipc3.unlockToPay = require('./js/libs/unlockViaIPC.js'); 
 
@@ -230,7 +214,9 @@
             document.getElementById('received').innerHTML = "No Alarm Set ...";
         }
 
-        updateTime(h, m, s, u, bt, bn);
+        document.getElementById('txt').innerHTML = h + ":" + m + ":" + s + " (" + u + ")";
+        document.getElementById('epo').innerHTML = web3.eth.getBlock('latest').timestamp;
+        document.getElementById('eth').innerHTML = web3.eth.blockNumber;
 
         t = setTimeout(startTime, 250);
     }
