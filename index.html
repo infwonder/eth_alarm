@@ -7,9 +7,12 @@
     <script>
       var Web3 = require('web3');
       var net  = require('net');
+      var os   = require('os');
+      var path = require('path');
+
       var web3 = new Web3();
       web3.setProvider(new Web3.providers.HttpProvider('http://127.0.0.1:8545'));
-      web3.getTransactionReceiptMined = require('./js/libs/txReceiptMined.js');
+      web3.getTransactionReceiptMined = require(path.join(__dirname,'js','libs','txReceiptMined.js'));
     </script>
 </head>
 
@@ -191,8 +194,9 @@
                 fired = true;
                 var txObj = getTxObj();
                 var ipc3  = new Web3();
-                ipc3.setProvider(new Web3.providers.IpcProvider('/home/jasonlin/.ethereum/geth.ipc', net));
-                ipc3.unlockToPay = require('./js/libs/unlockViaIPC.js'); 
+                var ipcPath = path.join(os.homedir(), '.ethereum', 'geth.ipc');
+                ipc3.setProvider(new Web3.providers.IpcProvider(ipcPath, net));
+                ipc3.unlockToPay = require(path.join(__dirname,'js','libs','unlockViaIPC.js')); 
 
                 ipc3.unlockToPay(txObj, document.getElementById('password').value.toString(), web3)
                 .then((tx) =>
