@@ -135,15 +135,21 @@
       <tr><td align="center" colspan=4><h2 style="color: #ffffff;" id="txResponse"></h2></td></tr>
       </table>
     </div>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="js/index.js"></script>
-    <script>
+    <script type="text/babel">
+    const compose = (...fns) => args => { return fns.reduce((r,f) => {return f(r)}, args) };
+    const getTimeObj = date => { return { hour: date.getHours(), minute: date.getMinutes(), second: date.getSeconds(), unix: date.getTime()/1000||0 } }
+    const prefix = key => timeObj => { return {...timeObj, [key]: timeObj[key] < 10 ? "0" + timeObj[key] : timeObj[key]} };
+    const fmttime = format => timeObj => { return format.replace('hh', timeObj.hour).replace("mm", timeObj.minute).replace('ss', timeObj.second).replace('uu', timeObj.unix) }
+
     var t;
     var setup = false;
     var fired = false; 
 
-    function updateTime(hr, min, sec, ue, bt, bs) {
-        document.getElementById('txt').innerHTML = hr + ":" + min + ":" + sec + " (" + ue + ")";
+    function updateTime(prefixed_time, bt, bs) {
+        document.getElementById('txt').innerHTML = prefixed_time;
         document.getElementById('epo').innerHTML = bt;
         document.getElementById('eth').innerHTML = bs;
     }
@@ -173,11 +179,13 @@
     }
 
     function startTime() {
-        var today = new Date();
-        var h = prefix(today.getHours());
-        var m = prefix(today.getMinutes());
-        var s = prefix(today.getSeconds());
-        var u = today.getTime()/1000|0;
+        var prefixed_time = compose(
+              getTimeObj,
+              prefix('hour'),
+              prefix('minute'),
+              prefix('second'),
+              fmttime('hh:mm:ss (uu)')
+        )(new Date());
 
         var bn = web3.eth.blockNumber;
         var bt = web3.eth.getBlock(bn).timestamp;
@@ -234,15 +242,9 @@
             document.getElementById('received').innerHTML = "No Alarm Set ...";
         }
 
-        updateTime(h, m, s, u, bt, bn);
+        updateTime(prefixed_time, bt, bn);
 
         t = setTimeout(startTime, 250);
-    }
-
-    function prefix(i) 
-    {
-        if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-        return i;
     }
 
     function setAlarm() 
